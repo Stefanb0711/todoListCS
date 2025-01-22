@@ -73,7 +73,7 @@ export class TodolistContextmenuComponent {
     this.todoServ.deleteTodolist().subscribe({
       next: (res: any) => {
         this.todoServ.currentTodolists = res;
-    }, error: err => {
+    }, error: (err: any) => {
 
       }
     })

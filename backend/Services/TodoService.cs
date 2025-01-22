@@ -23,7 +23,71 @@ namespace todListBackend.Services
         }
 
 
-        
+        public async Task<(bool success, string message)> DeleteTodolist(string todolistId)
+        {
+            try
+            {
+                var filter = Builders<TodolistModel>.Filter.Eq(t => t.Id, todolistId);
+                var result = await _todolistCollection.DeleteOneAsync(filter);
+
+                if (result.DeletedCount > 0)
+                {
+                    Console.WriteLine("Todolist erfolgreich gelöscht.");
+                    return (true, "Todolist erfolgreich gelöscht");
+                }
+                else
+                {
+                    Console.WriteLine("Kein Todolist gefunden.");
+                    return (false, "Kein Todolist gefunden");
+                }
+                // Datenbankabfrage für Löschen
+                
+               
+
+                return (false, "Todolist nicht gefunden oder unbefugt.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Fehler: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool success, string message, string todolistId)> DeleteTodo(string todoId)
+        {
+            try
+            {
+                
+                
+                
+                var filter = Builders<TodoModel>.Filter.Eq(t => t.Id, todoId);
+                
+                var todoItem = await _todoCollection.Find(filter).FirstOrDefaultAsync();
+
+                if (todoItem != null)
+                {
+                    var todolistId = todoItem.TodolistId;
+                    var result = await _todoCollection.DeleteOneAsync(filter);
+
+                    if (result.DeletedCount > 0)
+                    {
+                        Console.WriteLine("Todo erfolgreich gelöscht.");
+                        return (true, "Todo erfolgreich gelösch", todolistId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Kein Todo gefunden");
+                        return (false, "Kein Todo gefunden", "");
+                    }
+                }
+
+                return (false, "", "");
+
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Fehler: {ex.Message}", "");
+            }
+        }
 
         public async Task<List<TodolistModel>> GetAllTodolists(string currentUserId)
         {

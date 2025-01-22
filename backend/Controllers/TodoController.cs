@@ -27,6 +27,67 @@ namespace todListBackend.Controllers
 
         }
 
+        [HttpDelete("delete-todo/{todoId}")]
+        public async Task<IActionResult> DeleteTodo(string todoId)
+        {
+            var userId = HttpContext;
+
+            try
+            {
+                var (success, message, todolistId) = await _todoService.DeleteTodo(todoId);
+
+                if (success)
+                {
+                    var currentTodos = await _todoService.GetTodos(todolistId);
+
+                    return Ok(currentTodos);
+                }
+                return BadRequest();
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+            
+            
+        }
+
+        [HttpDelete("delete-todolist/{todolistId}")]
+        public async Task<IActionResult> DeleteTodolist(string todolistId)
+        {
+            
+            Console.WriteLine("In der Deleteroute");
+            
+            var userId = HttpContext.Items["UserId"] as string;
+
+            
+            try
+            {
+                var (success, message) = await _todoService.DeleteTodolist(todolistId);
+
+                if (success)
+                {
+                    var todoLists = await _todoService.GetAllTodolists(userId);
+                    
+                    return Ok(todoLists);
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        
+        
+        
 
         [HttpGet("get-all-todolists")]
         public async Task<IActionResult> GetAllTodolists()
